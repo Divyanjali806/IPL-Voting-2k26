@@ -453,8 +453,12 @@
     <div class="total-list" id="totalList"></div>  
     <div class="grand-total">Grand Total: <span id="grandTotal">0</span> votes</div>  
 </div>  
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+    const supabase = window.supabase.createClient(
+  "https://xitqwhrmigcouvlergkl.supabase.co",
+  "sb_publishable_3BG16KghBRbV1Y16MG2t1g_4sUKbimV"
+);
 const teams = [
     { id: 'csk', name: 'Chennai Super Kings', logo: 'https://documents.iplt20.com/ipl/CSK/logos/Logooutline/CSKoutline.png' },
     { id: 'rcb', name: 'Royal Challengers Bengaluru', logo: 'https://documents.iplt20.com/ipl/RCB/Logos/Logooutline/RCBoutline.png' },
@@ -531,21 +535,25 @@ function updateBars() {
 }
 
 // 🔥 VOTE FUNCTION (CONNECTED TO DB)
+
+   // 🔥 VOTE FUNCTION (FIXED)
 async function voteForTeam(teamId) {
-    const { data } = await supabase
+    const { data, error } = await supabase
         .from('vote')
-        .select('count')
+        .select('*')
         .eq('team_id', teamId)
         .single();
 
-    let newCount = data.count + 1;
+    console.log("FETCH:", data, error);
 
-    const { error } = await supabase
-    .from('vote')
-    .update({ count: newCount })
-    .eq('team_id', teamId);
+    let newCount = (data?.count || 0) + 1;
 
-console.log("UPDATE ERROR:", error);
+    const { error: updateError } = await supabase
+        .from('vote')
+        .update({ count: newCount })
+        .eq('team_id', teamId);
+
+    console.log("UPDATE ERROR:", updateError);
 
     votes[teamId] = newCount;
 
@@ -554,7 +562,6 @@ console.log("UPDATE ERROR:", error);
 
     updateBars();
 
-    // +1 popup
     const card = document.querySelector(`.team-card.${teamId}`);
     const plusOne = document.createElement('span');
     plusOne.textContent = '+1';
