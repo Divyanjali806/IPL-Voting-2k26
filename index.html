@@ -584,25 +584,74 @@
             }, 1000);
         }
     </script>
-    <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-<script>
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyBp5DOyZRcNFhbhv1pAIhXYRdBqj_y2L3I",
+    authDomain: "ipl-voting-b74b1.firebaseapp.com",
+    databaseURL: "https://ipl-voting-b74b1-default-rtdb.firebaseio.com/",
+    projectId: "ipl-voting-b74b1",
+    storageBucket: "ipl-voting-b74b1.firebasestorage.app",
+    messagingSenderId: "889643319202",
+    appId: "1:889643319202:web:86f0cfbfe442700cf73cfb"
+  };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const teams = [
+    'csk','rcb','mi','dc','gt','kkr','lsg','pbks','rr','srh'
+  ];
+
+  const votesRef = ref(db, "votes");
+
+  // REAL-TIME LISTENER
+  onValue(votesRef, (snapshot) => {
+    const data = snapshot.val() || {};
+
+    let total = 0;
+    let max = 1;
+
+    teams.forEach(id => {
+      const val = data[id] || 0;
+      total += val;
+      if (val > max) max = val;
+
+      document.getElementById('vc-' + id).textContent = val;
+      document.getElementById('tc-' + id).textContent = val;
+    });
+
+    teams.forEach(id => {
+      const val = data[id] || 0;
+      document.getElementById('bar-' + id).style.width = (val / max * 100) + "%";
+    });
+
+    document.getElementById('grandTotal').textContent = total;
+  });
+
+  // GLOBAL FUNCTION (important)
+  window.voteForTeam = function(teamId) {
+    const teamRef = ref(db, 'votes/' + teamId);
+
+    onValue(teamRef, (snapshot) => {
+      const current = snapshot.val() || 0;
+
+      update(ref(db, 'votes'), {
+        [teamId]: current + 1
+      });
+    }, { onlyOnce: true });
+
+    // animation
+    const card = document.querySelector(`.team-card.${teamId}`);
+    const plusOne = document.createElement('span');
+    plusOne.textContent = '+1';
+    plusOne.className = 'plus-one';
+    card.appendChild(plusOne);
+    setTimeout(() => card.removeChild(plusOne), 1000);
+  };
 </script>
-    
 </body>
 
 </html>
