@@ -453,127 +453,128 @@
     <div class="total-list" id="totalList"></div>  
     <div class="grand-total">Grand Total: <span id="grandTotal">0</span> votes</div>  
 </div>  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    const supabase = window.supabase.createClient(
-  "https://xitqwhrmigcouvlergkl.supabase.co",
-  "sb_publishable_3BG16KghBRbV1Y16MG2t1g_4sUKbimV"
-);
-const teams = [
-    { id: 'csk', name: 'Chennai Super Kings', logo: 'https://documents.iplt20.com/ipl/CSK/logos/Logooutline/CSKoutline.png' },
-    { id: 'rcb', name: 'Royal Challengers Bengaluru', logo: 'https://documents.iplt20.com/ipl/RCB/Logos/Logooutline/RCBoutline.png' },
-    { id: 'mi', name: 'Mumbai Indians', logo: 'https://documents.iplt20.com/ipl/MI/Logos/Logooutline/MIoutline.png' },
-    { id: 'dc', name: 'Delhi Capitals', logo: 'https://documents.iplt20.com/ipl/DC/Logos/LogoOutline/DCoutline.png' },
-    { id: 'gt', name: 'Gujarat Titans', logo: 'https://documents.iplt20.com/ipl/GT/Logos/Logooutline/GToutline.png' },
-    { id: 'kkr', name: 'Kolkata Knight Riders', logo: 'https://documents.iplt20.com/ipl/KKR/Logos/Logooutline/KKRoutline.png' },
-    { id: 'lsg', name: 'Lucknow Super Giants', logo: 'https://documents.iplt20.com/ipl/LSG/Logos/Logooutline/LSGoutline.png' },
-    { id: 'pbks', name: 'Punjab Kings', logo: 'https://documents.iplt20.com/ipl/PBKS/Logos/Logooutline/PBKSoutline.png' },
-    { id: 'rr', name: 'Rajasthan Royals', logo: 'https://documents.iplt20.com/ipl/RR/Logos/Logooutline/RRoutline.png' },
-    { id: 'srh', name: 'Sunrisers Hyderabad', logo: 'https://documents.iplt20.com/ipl/SRH/Logos/Logooutline/SRHoutline.png' }
-];
 
-const votes = {};
-teams.forEach(t => votes[t.id] = 0);
+<script>  
+    const teams = [  
+        {  
+            id: 'csk',  
+            name: 'Chennai Super Kings',  
+            logo: 'https://documents.iplt20.com/ipl/CSK/logos/Logooutline/CSKoutline.png',  
+        },  
+        {  
+            id: 'rcb',  
+            name: 'Royal Challengers Bengaluru',  
+            logo: 'https://documents.iplt20.com/ipl/RCB/Logos/Logooutline/RCBoutline.png',  
+        },  
+        {  
+            id: 'mi',  
+            name: 'Mumbai Indians',  
+            logo: 'https://documents.iplt20.com/ipl/MI/Logos/Logooutline/MIoutline.png',  
+        },  
+        {  
+            id: 'dc',  
+            name: 'Delhi Capitals',  
+            logo: 'https://documents.iplt20.com/ipl/DC/Logos/LogoOutline/DCoutline.png',  
+        },  
+        {  
+            id: 'gt',  
+            name: 'Gujarat Titans',  
+            logo: 'https://documents.iplt20.com/ipl/GT/Logos/Logooutline/GToutline.png',  
+        },  
+        {  
+            id: 'kkr',  
+            name: 'Kolkata Knight Riders',  
+            logo: 'https://documents.iplt20.com/ipl/KKR/Logos/Logooutline/KKRoutline.png',  
+        },  
+        {  
+            id: 'lsg',  
+            name: 'Lucknow Super Giants',  
+            logo: 'https://documents.iplt20.com/ipl/LSG/Logos/Logooutline/LSGoutline.png',  
+        },  
+        {  
+            id: 'pbks',  
+            name: 'Punjab Kings',  
+            logo: 'https://documents.iplt20.com/ipl/PBKS/Logos/Logooutline/PBKSoutline.png',  
+        },  
+        {  
+            id: 'rr',  
+            name: 'Rajasthan Royals',  
+            logo: 'https://documents.iplt20.com/ipl/RR/Logos/Logooutline/RRoutline.png',  
+        },  
+        {  
+            id: 'srh',  
+            name: 'Sunrisers Hyderabad',  
+            logo: 'https://documents.iplt20.com/ipl/SRH/Logos/Logooutline/SRHoutline.png',  
+        },  
+    ];  
 
-const grid = document.getElementById('teamGrid');
-const totalList = document.getElementById('totalList');
+    const votes = {};  
+    teams.forEach(t => votes[t.id] = 0);  
 
-// Build cards
-teams.forEach(team => {
-    const card = document.createElement('div');
-    card.className = `team-card ${team.id}`;
-    card.innerHTML = `
-        <div class="card-top">
-            <img src="${team.logo}" alt="${team.name}" loading="lazy"/>
-        </div>
-        <div class="card-bottom">
-            <div class="team-name">${team.name}</div>
-            <span class="card-counter" id="vc-${team.id}">0</span>
-        </div>
-    `;
-    card.onclick = () => voteForTeam(team.id);
-    grid.appendChild(card);
-});
+    const grid = document.getElementById('teamGrid');  
+    const totalList = document.getElementById('totalList');  
 
-// Build total rows
-teams.forEach(team => {
-    const row = document.createElement('div');
-    row.className = 'total-row';
-    row.innerHTML = `
-        <div class="total-row-name">${team.name}</div>
-        <div class="total-bar-wrap"><div class="total-bar" id="bar-${team.id}"></div></div>
-        <div class="total-row-count" id="tc-${team.id}">0</div>
-    `;
-    totalList.appendChild(row);
-});
+    // Build cards  
+    teams.forEach(team => {  
+        const card = document.createElement('div');  
+        card.className = `team-card ${team.id}`;  
+        card.innerHTML = `  
+  <div class="card-top">  
+    <img src="${team.logo}" alt="${team.name}" loading="lazy" onerror="this.style.opacity='0.3'"/>  
+  </div>  
+  <div class="card-bottom">  
+    <div class="team-name">${team.name}</div>  
+    <span class="card-counter" id="vc-${team.id}">0</span>  
+  </div>  
+`;  
+        card.onclick = () => voteForTeam(team.id);  
+        grid.appendChild(card);  
+    });  
 
-// 🔥 LOAD DATA FROM DATABASE
-async function loadVotes() {
-    const { data } = await supabase.from('vote').select('*');
+    // Build total rows  
+    teams.forEach(team => {  
+        const row = document.createElement('div');  
+        row.className = 'total-row';  
+        row.innerHTML = `  
+  <div class="total-row-name">${team.name}</div>  
+  <div class="total-bar-wrap"><div class="total-bar" id="bar-${team.id}"></div></div>  
+  <div class="total-row-count" id="tc-${team.id}">0</div>  
+`;  
+        totalList.appendChild(row);  
+    });  
 
-    data.forEach(row => {
-        votes[row.team_id] = row.count;
+    function voteForTeam(teamId) {  
+        votes[teamId]++;  
 
-        document.getElementById('vc-' + row.team_id).textContent = row.count;
-        document.getElementById('tc-' + row.team_id).textContent = row.count;
-    });
+        // Update card counter  
+        document.getElementById('vc-' + teamId).textContent = votes[teamId];  
 
-    updateBars();
-}
+        // Update total section  
+        document.getElementById('tc-' + teamId).textContent = votes[teamId];  
 
-// 🔥 UPDATE BARS + TOTAL
-function updateBars() {
-    const maxVotes = Math.max(...Object.values(votes), 1);
+        // Update bars  
+        const maxVotes = Math.max(...Object.values(votes), 1);  
+        teams.forEach(t => {  
+            const bar = document.getElementById('bar-' + t.id);  
+            bar.style.width = ((votes[t.id] / maxVotes) * 100) + '%';  
+        });  
 
-    teams.forEach(t => {
-        const bar = document.getElementById('bar-' + t.id);
-        bar.style.width = ((votes[t.id] / maxVotes) * 100) + '%';
-    });
+        // Grand total  
+        const grand = Object.values(votes).reduce((a, b) => a + b, 0);  
+        document.getElementById('grandTotal').textContent = grand;  
 
-    const grand = Object.values(votes).reduce((a, b) => a + b, 0);
-    document.getElementById('grandTotal').textContent = grand;
-}
-
-// 🔥 VOTE FUNCTION (CONNECTED TO DB)
-
-   // 🔥 VOTE FUNCTION (FIXED)
-async function voteForTeam(teamId) {
-    const { data, error } = await supabase
-        .from('vote')
-        .select('*')
-        .eq('team_id', teamId)
-        .single();
-
-    console.log("FETCH:", data, error);
-
-    let newCount = (data?.count || 0) + 1;
-
-    const { error: updateError } = await supabase
-        .from('vote')
-        .update({ count: newCount })
-        .eq('team_id', teamId);
-
-    console.log("UPDATE ERROR:", updateError);
-
-    votes[teamId] = newCount;
-
-    document.getElementById('vc-' + teamId).textContent = newCount;
-    document.getElementById('tc-' + teamId).textContent = newCount;
-
-    updateBars();
-
-    const card = document.querySelector(`.team-card.${teamId}`);
-    const plusOne = document.createElement('span');
-    plusOne.textContent = '+1';
-    plusOne.className = 'plus-one';
-    card.appendChild(plusOne);
-
-    setTimeout(() => {
-        if (card.contains(plusOne)) card.removeChild(plusOne);
-    }, 1000);
-}
-
-// 🔥 LOAD ON START
-loadVotes();
+        // Show +1 popup  
+        const card = document.querySelector(`.team-card.${teamId}`);  
+        const plusOne = document.createElement('span');  
+        plusOne.textContent = '+1';  
+        plusOne.className = 'plus-one';  
+        card.appendChild(plusOne);  
+        setTimeout(() => {  
+            if (card.contains(plusOne)) {  
+                card.removeChild(plusOne);  
+            }  
+        }, 1000);  
+    }  
 </script>
+
 </body>  </html>
