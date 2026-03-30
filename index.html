@@ -516,9 +516,7 @@
             },
         ];
 
-        const votes = {};
-        teams.forEach(t => votes[t.id] = 0);
-
+       
         const grid = document.getElementById('teamGrid');
         const totalList = document.getElementById('totalList');
 
@@ -550,40 +548,8 @@
     `;
             totalList.appendChild(row);
         });
-
-        function voteForTeam(teamId) {
-            votes[teamId]++;
-
-            // Update card counter
-            document.getElementById('vc-' + teamId).textContent = votes[teamId];
-
-            // Update total section
-            document.getElementById('tc-' + teamId).textContent = votes[teamId];
-
-            // Update bars
-            const maxVotes = Math.max(...Object.values(votes), 1);
-            teams.forEach(t => {
-                const bar = document.getElementById('bar-' + t.id);
-                bar.style.width = ((votes[t.id] / maxVotes) * 100) + '%';
-            });
-
-            // Grand total
-            const grand = Object.values(votes).reduce((a, b) => a + b, 0);
-            document.getElementById('grandTotal').textContent = grand;
-
-            // Show +1 popup
-            const card = document.querySelector(`.team-card.${teamId}`);
-            const plusOne = document.createElement('span');
-            plusOne.textContent = '+1';
-            plusOne.className = 'plus-one';
-            card.appendChild(plusOne);
-            setTimeout(() => {
-                if (card.contains(plusOne)) {
-                    card.removeChild(plusOne);
-                }
-            }, 1000);
-        }
     </script>
+        
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -601,10 +567,9 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  const teams = [
-    'csk','rcb','mi','dc','gt','kkr','lsg','pbks','rr','srh'
-  ];
-
+  const teamIds = [
+  'csk','rcb','mi','dc','gt','kkr','lsg','pbks','rr','srh'
+];
   const votesRef = ref(db, "votes");
 
   // REAL-TIME LISTENER
@@ -614,7 +579,7 @@
     let total = 0;
     let max = 1;
 
-    teams.forEach(id => {
+    teamIds.forEach(id => {
       const val = data[id] || 0;
       total += val;
       if (val > max) max = val;
@@ -623,7 +588,7 @@
       document.getElementById('tc-' + id).textContent = val;
     });
 
-    teams.forEach(id => {
+    teamIds.forEach(id => {
       const val = data[id] || 0;
       document.getElementById('bar-' + id).style.width = (val / max * 100) + "%";
     });
