@@ -540,10 +540,12 @@ async function voteForTeam(teamId) {
 
     let newCount = data.count + 1;
 
-    await supabase
-        .from('vote')
-        .update({ count: newCount })
-        .eq('team_id', teamId);
+    const { error } = await supabase
+    .from('vote')
+    .update({ count: newCount })
+    .eq('team_id', teamId);
+
+console.log("UPDATE ERROR:", error);
 
     votes[teamId] = newCount;
 
